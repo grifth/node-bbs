@@ -4,7 +4,6 @@ var http = require('http')
 var fs = require('fs')
 var url = require('url')
 var template = require('art-template')
-var storage = require('./localstorage')
 var comments = [
   {
     name: '张三',
@@ -12,7 +11,6 @@ var comments = [
     dateTime: '2015-10-16'
   },
 ]
-console.log(storage);
 http
   .createServer(function (req, res) {
     var parseObj = url.parse(req.url, true)
@@ -60,5 +58,5 @@ http
     }
   })
   .listen(3000, function () {
-    console.log('running...')
+    console.log(` http://localhost:3000/:... `)
   })
