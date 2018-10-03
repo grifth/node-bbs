@@ -4,11 +4,12 @@ var http = require('http')
 var fs = require('fs')
 var url = require('url')
 var template = require('art-template')
+var cp = require('child_process')
 var comments = [
   {
     name: '张三',
     message: '今天天气不错！',
-    dateTime: '2015-10-16'
+    dateTime: '2018/10/3 下午3:45:32'
   },
 ]
 http
@@ -43,7 +44,8 @@ http
       })
     } else if (pathname === '/pinglun') {
       var comment = parseObj.query
-      comment.dateTime = '2017-11-2 17:11:22'
+      var time = new Date().toLocaleString()
+      comment.dateTime = time
       comments.unshift(comment)
       res.statusCode = 302
       res.setHeader('Location', '/')
@@ -60,3 +62,4 @@ http
   .listen(3000, function () {
     console.log(` http://localhost:3000/:... `)
   })
+  cp.exec('start http://127.0.0.1:3000/');  // 自动打开默认浏览器
