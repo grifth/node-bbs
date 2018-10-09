@@ -1,65 +1,39 @@
+  var express = require('express')
+  var bodyParser = require('body-parser')
+  var cp = require('child_process')
+  var app = express()
 
+  app.use('/public/',express.static('./public/'))
 
-var http = require('http')
-var fs = require('fs')
-var url = require('url')
-var template = require('art-template')
-var cp = require('child_process')
-var comments = [
-  {
-    name: '张三',
-    message: '今天天气不错！',
-    dateTime: '2018/10/3 下午3:45:32'
-  },
-]
-http
-  .createServer(function (req, res) {
-    var parseObj = url.parse(req.url, true)
+  app.engine('html',require('express-art-template'))
 
-    var pathname = parseObj.pathname
+  app.use(bodyParser.urlencoded({extended:false}))
 
-    if (pathname === '/') {
-      fs.readFile('./views/index.html', function (err, data) {
-        if (err) {
-          return res.end('404 Not Found.')
-        }
-        var htmlStr = template.render(data.toString(), {
-          comments: comments
-        })
-        res.end(htmlStr)
-      })
-    } else if (pathname === '/post') {
-      fs.readFile('./views/post.html', function (err, data) {
-        if (err) {
-          return res.end('404 Not Found.')
-        }
-        res.end(data)
-      })
-    } else if (pathname.indexOf('/public/') === 0) {
-      fs.readFile('.' + pathname, function (err, data) {
-        if (err) {
-          return res.end('404 Not Found.')
-        }
-        res.end(data)
-      })
-    } else if (pathname === '/pinglun') {
-      var comment = parseObj.query
-      var time = new Date().toLocaleString()
-      comment.dateTime = time
-      comments.unshift(comment)
-      res.statusCode = 302
-      res.setHeader('Location', '/')
-      res.end()
-    } else {
-      fs.readFile('./views/404.html', function (err, data) {
-        if (err) {
-          return res.end('404 Not Found.')
-        }
-        res.end(data)
-      })
-    }
+  app.use(bodyParser.json())
+  var comments = [
+    {
+      name: '张三',
+      message: '今天天气不错！',
+      dateTime: '2018-10-3 17:18:44'
+    },
+  ]
+  app.get('/',function(req,res){
+    res.render('index.html',{
+      comments:comments
+    })
   })
-  .listen(3000, function () {
-    console.log(` http://localhost:3000/:... `)
+  app.get('/post',function(req,res){
+    res.render('post.html')
+  })
+
+  app.post('/post',function(req,res){
+    var comment = req.body
+    var time = new Date().toLocaleString()
+    comment.dateTime = time
+    comments.unshift(comment)
+    res.redirect('/')
+  })
+  app.listen(3000,function(){
+      console.log('running3000', '')    
   })
   cp.exec('start http://127.0.0.1:3000/');  // 自动打开默认浏览器
